@@ -6,17 +6,21 @@ import tweepy
 import os
 import webbrowser
 
-# 各種キーをセット
-CONSUMER_KEY = '52vTKp6AIVKyBESMyxO0p0y0V'
-CONSUMER_SECRET = '57vn9D85XVYIOwzEmyP9JUObNbWjxg06UOGUltqyFpKkiWqeso'
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-
 authfile = os.path.exists('data.dat')
 authfile2 = os.path.exists('data2.dat')
 
 
-class tokenMgr():
+class TwitterMgr():
+    def __init__(self):
+        os.makedirs("./data", exist_ok=True)
+        os.makedirs("./data/user", exist_ok=True)
+        os.makedirs("./data/cache", exist_ok=True)
+        
+    def init_Auth(self):
+        self.auth = tweepy.OAuthHandler(self.CONSUMER_KEY, self.CONSUMER_SECRET)
 
+    def init_Api(self):
+        self.api = tweepy.API(self.auth)
 
     def savedata(data1, data2):  # トークン取得スキップのために保存
         f = open('data.dat', 'w')
@@ -27,13 +31,8 @@ class tokenMgr():
         f.close()
 
 
-    def Gettoken():
+    def get_Authurl(self):
         print("ファイルが存在しないためトークンを取得します")
-        # 念のためトークンファイルを削除
-        if authfile == True:
-            os.remove(data.dat)
-        if authfile2 == True:
-            os.remove(data2.dat)
 
         # OAuth認証コードを貰いに行くアドレスを取得する
         redirect_url = auth.get_authorization_url()

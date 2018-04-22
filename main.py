@@ -7,13 +7,13 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QIcon,QFont,QPixmap,QPalette,QKeySequence
 from PyQt5.QtCore import QCoreApplication, Qt,QBasicTimer, QPoint, QSize
 import sys
-import tweetlib
+import Auth
 import tweepy.error
 import win32gui, re
 from system_hotkey import SystemHotkey
 
-api = tweetlib.api
-auth = tweetlib.auth
+api = Auth.api
+auth = Auth.auth
 
 
 class WindowMgr:

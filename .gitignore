@@ -60,3 +60,7 @@ target/
 # IDE workspace
 /.idea/
 /tmp/
+
+# Shit Access Token
+data.dat
+data2.dat
