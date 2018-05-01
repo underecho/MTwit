@@ -11,48 +11,32 @@ import hashlib
 import base64
 
 
-class TwitterMgr():
+class TwitterMgr:
     def __init__(self):
         os.makedirs("./data", exist_ok=True)
         os.makedirs("./data/user", exist_ok=True)
         os.makedirs("./data/cache", exist_ok=True)
+        self.ACCESS_TOKEN = ""
+        self.ACCESS_SECRET = ""
+        self.CONSUMER_KEY = ""
+        self.CONSUMER_SECRET = ""
 
-    def init_Auth(self):
+    def init_auth(self, consumer_key, consumer_secret):  # GUI
+        self.CONSUMER_KEY = consumer_key
+        self.CONSUMER_SECRET = consumer_secret
         self.auth = tweepy.OAuthHandler(self.CONSUMER_KEY, self.CONSUMER_SECRET)
 
-    def init_Api(self):
+    def init_api(self):
         self.api = tweepy.API(self.auth)
 
-    def savedata(data1, data2):  # トークン取得スキップのために保存
-        f = open('data.dat', 'w')
-        f.write(data1)
-        f.close()
-        f = open('data2.dat', 'w')
-        f.write(data2)
-        f.close()
-
-
-    def get_Authurl(self):
-        print("ファイルが存在しないためトークンを取得します")
-
-        # OAuth認証コードを貰いに行くアドレスを取得する
+    def open_twitterauth(self):
         redirect_url = self.auth.get_authorization_url()
-        # アドレスを表示し、ブラウザでアクセスして認証用コードを取得してくる。
-        print('ここにアクセスしてPINを入手してください: ' + redirect_url)
         webbrowser.open(redirect_url)
-        # ブラウザから取得してきた認証用コードを対話モードで入力する。
-        # strip()はコピペの際に末尾に改行コードとかスペースが入ったのを消すため。
-        verifier = input('PIN>> ').strip()
 
-        # Access TokenとAccess Token Secretを取得してそれぞれオブジェクト
-        # として格納しておく。
-        auth.get_access_token(verifier)
-        ACCESS_TOKEN = auth.access_token
-        ACCESS_SECRET = auth.access_token_secret
-        return 0
-
-    def open_url(self, url):
-        webbrowser.open(url)
+    def verify_twitter(self, verifier):  # GUI
+        self.auth.get_access_token(verifier)
+        self.ACCESS_TOKEN = self.auth.access_token
+        self.ACCESS_SECRET = self.auth.access_token_secret
 
     def get_uuid(self):
         x = subprocess.check_output('wmic csproduct get UUID')
@@ -85,8 +69,4 @@ class TwitterMgr():
         raw_data = base64.b64decode(decrypted_data)
         return raw_data
 
-
-
-# APIインスタンスを作成
-api = tweepy.API(auth)
 
