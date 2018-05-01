@@ -54,7 +54,7 @@ class TwitterMgr():
     def open_url(self, url):
         webbrowser.open(url)
 
-    def get_Uuid(self):
+    def get_uuid(self):
         x = subprocess.check_output('wmic csproduct get UUID')
         x = str(x[1])
         x = x.replace("b'", "").replace("'", "").replace("-", "")
@@ -86,23 +86,6 @@ class TwitterMgr():
         return raw_data
 
 
-    # トークンが保存されているかチェック
-    print("ファイルチェック中...")
-    if authfile == True:
-        if authfile2 == True:
-            f = open('data.dat', 'r')
-            ACCESS_TOKEN = f.readline()
-            f.close()
-            f = open('data2.dat', 'r')
-            ACCESS_SECRET = f.readline()
-            f.close()
-            print("ファイルが存在したため認証をスキップしました。")
-            auth.access_token = ACCESS_TOKEN
-            auth.access_token_secret = ACCESS_SECRET
-        else:
-            Gettoken()
-    else:
-        Gettoken()
 
 # APIインスタンスを作成
 api = tweepy.API(auth)
