@@ -7,13 +7,13 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QIcon,QFont,QPixmap,QPalette,QKeySequence
 from PyQt5.QtCore import QCoreApplication, Qt,QBasicTimer, QPoint, QSize
 import sys
-import Auth
+#import Auth
 import tweepy.error
 import win32gui, re
 from system_hotkey import SystemHotkey
 
-api = Auth.api
-auth = Auth.auth
+#api = Auth.api
+#auth = Auth.auth
 
 
 class WindowMgr:
@@ -42,17 +42,112 @@ class WindowMgr:
         win32gui.SetForegroundWindow(self._handle)
 
 
-class tbtn(QPushButton):
+class hoverButton(QPushButton):
     def __init__(self, parent=None):
-        super(tbtn, self).__init__(parent)
+        super(hoverButton, self).__init__(parent)
 
     def enterEvent(self, QEvent):
-        self.setStyleSheet("background-color: rgba(200, 200, 200, 60);"
+        self.setStyleSheet("background-color: rgba(200, 200, 200, 0.2);"
                            "border: 0px solid gray;")
 
     def leaveEvent(self, QEvent):
         self.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
                            "border: 0px solid gray;")
+
+
+class ErrorWindow(QDialog):
+    def __init__(self):
+        self.super(ErrorWindow, self).__init__()
+
+
+
+class NotificationWindow(QWidget):
+    def __init__(self):
+        self.super(QWidget).__init__()
+
+
+class AuthWindow(QDialog):  # CK, CS, PIN
+    def __init__(self, parent=None):
+        super(AuthWindow, self).__init__(parent)
+        self.parent = parent
+
+        self.resize(400, 150)
+        self.setWindowTitle('Auth')
+        self.setStyleSheet("QDialog{background-image: url(image/window.png);"
+                           "border: 0px solid black;}")
+        self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
+        self.oldPos = self.pos()
+
+    # ここで親ウィンドウに値を渡している
+    def setParamOriginal(self):
+        self.parent.setParam(self.edit.text())
+
+    def show(self, MODE):
+        if MODE == "Consumer":
+            self.ui_setConsumer()
+
+        elif MODE == "TwitterPIN":
+            self.ui_setTwitterPIN()
+
+
+        self.exec_()
+
+    def mousePressEvent(self, event):
+        super(AuthWindow, self).mousePressEvent(event)
+        self.oldPos = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+        super(AuthWindow, self).mouseMoveEvent(event)
+        delta = QPoint(event.globalPos() - self.oldPos)
+        # print(delta)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.oldPos = event.globalPos()
+
+    # define UI and action
+    def ui_setConsumer(self):  # 2 TextEdit and 1 Button
+        ConsumerKeyWindow = QLineEdit('', self)
+        ConsumerKeyWindow.resize(320, 20)
+        ConsumerKeyWindow.move(10, 30)
+        ConsumerKeyWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
+                                        "border: 1px solid gray;"
+                                        "font: 10pt 'Meiryo UI' ;"
+                                        "color: #FFFFFF;")
+
+        ConsumerSecretWindow = QLineEdit('', self)
+        ConsumerSecretWindow.resize(320, 20)
+        ConsumerSecretWindow.move(10, 80)
+        ConsumerSecretWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
+                                           "border: 1px solid gray;"
+                                           "font: 10pt 'Meiryo UI' ;"
+                                           "color: #FFFFFF;")
+
+        label1 = QLabel("Consumer Key", self)
+        label1.move(10, 10)
+        label1.resize(180, 20)
+        label1.setStyleSheet("color: #EEEEEE; "
+                             "font: 12pt 'Meiryo UI'; ")
+
+        label2 = QLabel("Consumer Secret", self)
+        label2.move(10, 60)
+        label2.resize(180, 20)
+        label2.setStyleSheet("color: #EEEEEE; "
+                             "font: 12pt 'Meiryo UI'; ")
+
+        self.button = hoverButton(self)
+        self.button.resize(48, 48)
+        self.button.move(340, 65)
+        self.button.setObjectName('setCButton')
+        self.button.setIcon(QtGui.QIcon("image/send.png"))
+        self.button.setIconSize(QSize(32, 32))
+        self.button.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
+                                  "border: 0px solid gray;")
+        self.button.clicked.connect(self.setConsumerEvent)
+
+    def ui_setTwitterPIN(self):  # 1 TextEdit and 1 Button
+        self.setStyleSheet()
+
+    def setConsumerEvent(self):
+        pass
 
 
 class mainWindow(QMainWindow):
@@ -61,11 +156,12 @@ class mainWindow(QMainWindow):
     w.find_window_wildcard("MTwit")
 
     def __init__(self, parent=None):
-        super(mainWindow, self).__init__()
+        super(mainWindow, self).__init__(parent)
 
         self.mwidget = QMainWindow(self)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
         self.setWindowTitle("MTwit")
+
         # window size
         self.setFixedSize(480, 120)
         self.center()
@@ -97,12 +193,12 @@ class mainWindow(QMainWindow):
         self.qbtn.move(455, 2)
 
         # Tweet Button
-        self.tbtn = tbtn(self)
+        self.tbtn = hoverButton(self)
         self.tbtn.resize(48, 48)
         self.tbtn.move(420, 62)
         self.tbtn.setObjectName('tButton')
         self.tbtn.setIcon(QtGui.QIcon("image/send.png"))
-        self.tbtn.setIconSize(QSize(32,32))
+        self.tbtn.setIconSize(QSize(32, 32))
         self.tbtn.setStyleSheet("background-color: rgba(200, 200, 200, 0);")
         self.tbtn.clicked.connect(self.tweetEvent)
 
@@ -111,8 +207,8 @@ class mainWindow(QMainWindow):
         self.tShortcut.activated.connect(self.tweetEvent)
 
         # window show Shortcut
-        hk = SystemHotkey(consumer=self.ShowOrHide)
-        hk.register(('alt', 'shift', 'f1'))
+        self.hk = SystemHotkey(consumer=self.ShowOrHide)
+        self.hk.register(('alt', 'shift', 'f1'))
 
         # label
         """self.lbl = QLabel(self)
@@ -160,7 +256,7 @@ class mainWindow(QMainWindow):
 
     def quitEvent(self):
         self.trayIcon.hide()
-        hk.unregister(('alt', 'shift', 'f1'))
+        self.hk.unregister(('alt', 'shift', 'f1'))
         QCoreApplication.instance().quit()
         pass
 
@@ -185,6 +281,8 @@ class mainWindow(QMainWindow):
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
+        self.trayIconMenu.addAction(self.debugMakeWindowAction)
+        self.trayIconMenu.addSeparator()
         self.trayIconMenu.addAction(self.minimizeAction)
         self.trayIconMenu.addAction(self.restoreAction)
         self.trayIconMenu.addSeparator()
@@ -198,15 +296,27 @@ class mainWindow(QMainWindow):
         self.minimizeAction = QAction("Mi&nimize", self, triggered=self.hide)
         self.restoreAction = QAction("&Restore", self, triggered=self.showNormal)
         self.quitAction = QAction("&Quit", self, triggered=self.quitEvent)
+        self.debugMakeWindowAction = QAction("&DebugMakeAuth", self, triggered=self.makeAuthWindow)
 
     def showEvent_(self):
         self.textWindow.setPlainText("")
         self.show()
         self.w.set_foreground()
 
+    # Auth Window
+
+    def makeAuthWindow(self):
+        authWindow = AuthWindow(self)
+        authWindow.show("Consumer")
+
+    def setParam(self, param):
+        self.textWindow.setPlainText(param)
+
+    # ---------------------------
+
+
 app = QApplication(sys.argv)
-app.setStyleSheet("QMainWindow{background-image: url(image/window.png);border: 0px solid black};"
-                  "QPushButton{background-color: black};")
+app.setStyleSheet("QMainWindow{background-image: url(image/window.png);border: 0px solid black};")
 
 ex = mainWindow()
 sys.exit(app.exec_())

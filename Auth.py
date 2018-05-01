@@ -10,9 +10,6 @@ from Crypto.Cipher import AES
 import hashlib
 import base64
 
-authfile = os.path.exists('data.dat')
-authfile2 = os.path.exists('data2.dat')
-
 
 class TwitterMgr():
     def __init__(self):
@@ -39,7 +36,7 @@ class TwitterMgr():
         print("ファイルが存在しないためトークンを取得します")
 
         # OAuth認証コードを貰いに行くアドレスを取得する
-        redirect_url = auth.get_authorization_url()
+        redirect_url = self.auth.get_authorization_url()
         # アドレスを表示し、ブラウザでアクセスして認証用コードを取得してくる。
         print('ここにアクセスしてPINを入手してください: ' + redirect_url)
         webbrowser.open(redirect_url)
@@ -52,8 +49,10 @@ class TwitterMgr():
         auth.get_access_token(verifier)
         ACCESS_TOKEN = auth.access_token
         ACCESS_SECRET = auth.access_token_secret
-        savedata(ACCESS_TOKEN, ACCESS_SECRET)  # data1にACCESS_TOKEN、data2にACCESS_SECRET
         return 0
+
+    def open_url(self, url):
+        webbrowser.open(url)
 
     def get_Uuid(self):
         x = subprocess.check_output('wmic csproduct get UUID')
@@ -61,14 +60,32 @@ class TwitterMgr():
         x = x.replace("b'", "").replace("'", "").replace("-", "")
         return(x)
 
-    def encrypt_data(self, raw_data, Key):
+    def doEncryption_data(self, raw_data, key, iv):
+        # 前準備
         raw_base64 = base64.b64encode(raw_data)
-        if len(raw_base64) % 16 != 0:
-            while len(raw_base64) % 16 == 0:
-                raw_base64 += "_"
+        while len(raw_base64) % 16 != 0:
+            raw_base64 += "_"
+        key_32bit = hashlib.sha256(key).digest()
+        iv = hashlib.md5(iv).digest()
+        # 暗号化とデータの文字列化
+        crypt = AES.new(key_32bit, AES.MODE_CBC, iv)
+        encrypted_data = crypt.encrypt(raw_base64)
+        encrypted_data_base64 = base64.b64encode(encrypted_data)
+        return encrypted_data_base64
 
-        key_32bit = hashlib.sha256(Key).digest()
-        
+    def doDecryption_data(self, encrypted_data_base64, key, iv):
+        # 前準備
+        encrypted_data = base64.b64decode(encrypted_data_base64)
+        key_32bit = hashlib.sha256(key).digest()
+        iv = hashlib.md5(iv).digest()
+        crypt = AES.new(key_32bit, AES.MODE_CBC, iv)
+        # 復号と後処理
+        decrypted_data = crypt.decrypt(encrypted_data)
+        decrypted_data = decrypted_data.split("_")[0]
+        raw_data = base64.b64decode(decrypted_data)
+        return raw_data
+
+
     # トークンが保存されているかチェック
     print("ファイルチェック中...")
     if authfile == True:
@@ -90,5 +107,3 @@ class TwitterMgr():
 # APIインスタンスを作成
 api = tweepy.API(auth)
 
-# これだけで、Twitter APIをPythonから操作するための準備は完了。
-print('Done!')
