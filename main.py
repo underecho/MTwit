@@ -89,7 +89,6 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         elif MODE == "TwitterPIN":
             self.ui_setTwitterPIN()
 
-
         self.exec_()
 
     def mousePressEvent(self, event):
@@ -143,7 +142,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
                                   "border: 0px solid gray;")
         self.button.clicked.connect(self.setConsumerEvent)
 
-    def ui_setTwitterPIN(self):  # 1 TextEdit and 1 Button
+    def ui_setTwitterPIN(self):  # 1 TextEdit(7 digit) and 1 Button
         self.setStyleSheet()
 
     def setConsumerEvent(self):
@@ -237,7 +236,6 @@ class mainWindow(QMainWindow):
 
     def mouseMoveEvent(self, event):
         delta = QPoint(event.globalPos() - self.oldPos)
-        #print(delta)
         self.move(self.x() + delta.x(), self.y() + delta.y())
         self.oldPos = event.globalPos()
 
@@ -307,7 +305,7 @@ class mainWindow(QMainWindow):
 
     def makeAuthWindow(self):
         authWindow = AuthWindow(self)
-        authWindow.show("Consumer")
+        authWindow.show("Consumer")  # Debug
 
     def setParam(self, param):
         self.textWindow.setPlainText(param)
