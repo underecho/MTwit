@@ -1,25 +1,29 @@
-from PyQt5.QtWidgets import (QMessageBox,QApplication, QWidget, QToolTip, QPushButton,
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from PyQt5.QtWidgets import (QMessageBox, QApplication, QWidget, QToolTip, QPushButton,
                              QDesktopWidget, QMainWindow, QAction, qApp, QToolBar, QVBoxLayout,
-                             QComboBox,QLabel,QLineEdit,QGridLayout,QMenuBar,QMenu,QStatusBar,
-                             QPlainTextEdit,QDialog,QFrame,QProgressBar,QShortcut,QSystemTrayIcon
+                             QComboBox, QLabel, QLineEdit, QGridLayout, QMenuBar, QMenu, QStatusBar,
+                             QPlainTextEdit, QDialog, QFrame, QProgressBar, QShortcut, QSystemTrayIcon
                              )
 from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtGui import QIcon,QFont,QPixmap,QPalette,QKeySequence
-from PyQt5.QtCore import QCoreApplication, Qt,QBasicTimer, QPoint, QSize
+from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QKeySequence
+from PyQt5.QtCore import QCoreApplication, Qt, QBasicTimer, QPoint, QSize
 import sys
-#import Auth
+# import Auth
 import tweepy.error
 import win32gui, re
 from system_hotkey import SystemHotkey
 
-#api = Auth.api
-#auth = Auth.auth
+
+# api = Auth.api
+# auth = Auth.auth
 
 
 class WindowMgr:
     """Encapsulates some calls to the winapi for window management"""
 
-    def __init__ (self):
+    def __init__(self):
         """Constructor"""
         self._handle = None
 
@@ -58,7 +62,6 @@ class hoverButton(QPushButton):
 class ErrorWindow(QDialog):
     def __init__(self):
         self.super(ErrorWindow, self).__init__()
-
 
 
 class NotificationWindow(QWidget):
@@ -173,8 +176,8 @@ class mainWindow(QMainWindow):
 
         # Textwindow
         self.textWindow = QPlainTextEdit('', self)
-        self.textWindow.resize(400,100)
-        self.textWindow.move(10,10)
+        self.textWindow.resize(400, 100)
+        self.textWindow.move(10, 10)
         self.textWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
                                       "border: 1px solid gray;"
                                       "font: 14pt 'Meiryo UI' ;"
@@ -249,8 +252,6 @@ class mainWindow(QMainWindow):
             api.update_status(text)
         except tweepy.error.TweepError:
             pass
-
-
 
     def quitEvent(self):
         self.trayIcon.hide()
