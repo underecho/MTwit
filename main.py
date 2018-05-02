@@ -74,7 +74,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         super(AuthWindow, self).__init__(parent)
         self.parent = parent
 
-        self.resize(400, 150)
+        self.resize(400, 120)
         self.setWindowTitle('Auth')
         self.setStyleSheet("QDialog{background-image: url(image/window.png);"
                            "border: 0px solid black;}")
@@ -146,7 +146,33 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         self.button.clicked.connect(self.setConsumerEvent)
 
     def ui_setTwitterPIN(self):  # 1 TextEdit(7 digit) and 1 Button
-        self.setStyleSheet()
+        label1 = QLabel("PINCode", self)
+        label1.move(10, 10)
+        label1.resize(180, 20)
+        label1.setStyleSheet("color: #EEEEEE; "
+                             "font: 12pt 'Meiryo UI'; ")
+        pin_window = QLineEdit('', self)
+        pin_window.resize(320, 60)
+        pin_window.move(10, 40)
+        pin_window.setStyleSheet("background-color: rgba(0,0,0,50);"
+                                        "border: 1px solid gray;"
+                                        "font: 28pt 'Meiryo UI' ;"
+                                        "color: #FFFFFF;")
+        pin_window.setMaxLength(7)
+        pin_window.setAlignment(Qt.AlignCenter)
+
+        self.button = hoverButton(self)
+        self.button.resize(48, 48)
+        self.button.move(340, 65)
+        self.button.setObjectName('setPINButton')
+        self.button.setIcon(QtGui.QIcon("image/send.png"))
+        self.button.setIconSize(QSize(32, 32))
+        self.button.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
+                                  "border: 0px solid gray;")
+        self.button.clicked.connect(self.setPINEvent)
+
+    def setPINEvent(self):
+        pass
 
     def setConsumerEvent(self):
         pass
@@ -306,7 +332,7 @@ class mainWindow(QMainWindow):
 
     def makeAuthWindow(self):
         authWindow = AuthWindow(self)
-        authWindow.show("Consumer")  # Debug
+        authWindow.show("TwitterPIN")  # Debug
 
     def setParam(self, param):
         self.textWindow.setPlainText(param)
