@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 # Tweepyライブラリをインポート
+from tweepy.error import TweepError
 import tweepy
 import os
 import webbrowser
@@ -26,17 +27,29 @@ class TwitterMgr:
         self.CONSUMER_SECRET = consumer_secret
         self.auth = tweepy.OAuthHandler(self.CONSUMER_KEY, self.CONSUMER_SECRET)
 
+    def set_accesstoken(self, token, secret):  # GUI
+        self.ACCESS_TOKEN = token
+        self.ACCESS_SECRET = secret
+        self.auth.set_access_token(token, secret)
+
     def init_api(self):
         self.api = tweepy.API(self.auth)
 
     def open_twitterauth(self):
-        redirect_url = self.auth.get_authorization_url()
+        try:
+            redirect_url = self.auth.get_authorization_url()
+        except TweepError:
+            pass
         webbrowser.open(redirect_url)
 
     def verify_twitter(self, verifier):  # GUI
-        self.auth.get_access_token(verifier)
+        try:
+            self.auth.get_access_token(verifier)
+        except TweepError:
+            return False
         self.ACCESS_TOKEN = self.auth.access_token
         self.ACCESS_SECRET = self.auth.access_token_secret
+        return True
 
     def get_uuid(self):
         x = subprocess.check_output('wmic csproduct get UUID')
