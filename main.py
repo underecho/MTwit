@@ -10,7 +10,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QKeySequence
 from PyQt5.QtCore import QCoreApplication, Qt, QBasicTimer, QPoint, QSize
 import sys
-# import Auth
+import Auth
 import tweepy.error
 import win32gui, re
 from system_hotkey import SystemHotkey
@@ -59,12 +59,14 @@ class hoverButton(QPushButton):
                            "border: 0px solid gray;")
 
 
-class ErrorWindow(QDialog):
-    def __init__(self):
-        self.super(ErrorWindow, self).__init__()
+class ErrorWindow(QDialog):  # ここ出来上がらんとやばみ
+    def __init__(self, parent=None):
+        self.super(ErrorWindow, self).__init__(parent)
+        self.parent = parent
+        self.resize(400, 120)
 
 
-class NotificationWindow(QWidget):
+class NotificationWindow(QWidget):  # ErrorWindowと統合してもいいかもしれない
     def __init__(self):
         self.super(QWidget).__init__()
 
@@ -73,7 +75,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
     def __init__(self, parent=None):
         super(AuthWindow, self).__init__(parent)
         self.parent = parent
-
+        self.Auth = Auth.TwitterMgr()
         self.resize(400, 120)
         self.setWindowTitle('Auth')
         self.setStyleSheet("QDialog{background-image: url(image/window.png);"
@@ -107,18 +109,18 @@ class AuthWindow(QDialog):  # CK, CS, PIN
 
     # define UI and action
     def ui_setConsumer(self):  # 2 TextEdit and 1 Button
-        ConsumerKeyWindow = QLineEdit('', self)
-        ConsumerKeyWindow.resize(320, 20)
-        ConsumerKeyWindow.move(10, 30)
-        ConsumerKeyWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
+        self.ConsumerKeyWindow = QLineEdit('', self)
+        self.ConsumerKeyWindow.resize(320, 20)
+        self.ConsumerKeyWindow.move(10, 30)
+        self.ConsumerKeyWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
                                         "border: 1px solid gray;"
                                         "font: 10pt 'Meiryo UI' ;"
                                         "color: #FFFFFF;")
 
-        ConsumerSecretWindow = QLineEdit('', self)
-        ConsumerSecretWindow.resize(320, 20)
-        ConsumerSecretWindow.move(10, 80)
-        ConsumerSecretWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
+        self.ConsumerSecretWindow = QLineEdit('', self)
+        self.ConsumerSecretWindow.resize(320, 20)
+        self.ConsumerSecretWindow.move(10, 80)
+        self.ConsumerSecretWindow.setStyleSheet("background-color: rgba(0,0,0,50);"
                                            "border: 1px solid gray;"
                                            "font: 10pt 'Meiryo UI' ;"
                                            "color: #FFFFFF;")
@@ -151,15 +153,15 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         label1.resize(180, 20)
         label1.setStyleSheet("color: #EEEEEE; "
                              "font: 12pt 'Meiryo UI'; ")
-        pin_window = QLineEdit('', self)
-        pin_window.resize(320, 60)
-        pin_window.move(10, 40)
-        pin_window.setStyleSheet("background-color: rgba(0,0,0,50);"
+        self.pin_window = QLineEdit('', self)
+        self.pin_window.resize(320, 60)
+        self.pin_window.move(10, 40)
+        self.pin_window.setStyleSheet("background-color: rgba(0,0,0,50);"
                                         "border: 1px solid gray;"
                                         "font: 28pt 'Meiryo UI' ;"
                                         "color: #FFFFFF;")
-        pin_window.setMaxLength(7)
-        pin_window.setAlignment(Qt.AlignCenter)
+        self.pin_window.setMaxLength(7)
+        self.pin_window.setAlignment(Qt.AlignCenter)
 
         self.button = hoverButton(self)
         self.button.resize(48, 48)
@@ -175,6 +177,8 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         pass
 
     def setConsumerEvent(self):
+        self.Auth.init_auth(self.ConsumerKeyWindow.text().strip(), self.ConsumerSecretWindow.text().strip())
+
         pass
 
 
