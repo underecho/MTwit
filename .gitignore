@@ -60,6 +60,7 @@ target/
 # IDE workspace
 /.idea/
 /tmp/
+/.vscode
 
 # Shit Access Token
 data.dat
