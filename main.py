@@ -11,7 +11,7 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QKeySequence
 from PyQt5.QtCore import QCoreApplication, Qt, QBasicTimer, QPoint, QSize
 import sys
 from Auth import TwitterMgr as Auth
-import Error
+from Error import *
 import tweepy.error
 import win32gui, re
 from system_hotkey import SystemHotkey
@@ -19,7 +19,6 @@ from system_hotkey import SystemHotkey
 
 # api = Auth.api  # Twitter Rest API Object (Option GUI Required)
 # auth = Auth.auth # Tweepy Auth Object (Option GUI Required)
-
 
 class WindowMgr:
   """Encapsulates some calls to the winapi for window management"""
@@ -41,10 +40,11 @@ class WindowMgr:
     """find a window whose title matches the wildcard regex"""
     self._handle = None
     win32gui.EnumWindows(self._window_enum_callback, wildcard)
+    print (self._handle) # Debug
 
-  def set_foreground(self):
+  def set_foreground(self, Id):
     """put the window in the foreground"""
-    win32gui.SetForegroundWindow(self._handle)
+    win32gui.SetForegroundWindow(Id)
 
 
 class hoverButton(QPushButton):
@@ -167,6 +167,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
                     "color: #FFFFFF;")
     self.pin_window.setMaxLength(7)
     self.pin_window.setAlignment(Qt.AlignCenter)
+    self.pin_window.returnPressed.connect(self.setPINEvent)
 
     self.button = hoverButton(self)
     self.button.resize(48, 48)
@@ -179,26 +180,38 @@ class AuthWindow(QDialog):  # CK, CS, PIN
     self.button.clicked.connect(self.setPINEvent)
 
   def setPINEvent(self):
-    errW = Error.Errorwindow(self)
-    print(errW.show("test"))
+    errW = Errorwindow(self)
+    # print(errW.show("test"))
+    self.hide()
+    try:
+      Auth.verify_twitter(Auth, self.pin_window.text())
+      self.pin_window.clear()
+      self.parent.api = Auth.init_api(Auth) # Debug
+    except VerifyError:
+      errW.show(VerifyError().__str__())
+      pass
+      self.show("TwitterPIN")
 
   def setConsumerEvent(self):
-    self.Auth.init_auth(self.ConsumerKeyWindow.text().strip(), self.ConsumerSecretWindow.text().strip())
-
+    self.parent.auth = Auth.init_auth(Auth, self.ConsumerKeyWindow.text().strip(), self.ConsumerSecretWindow.text().strip()) # Debug
+    if Auth.open_twitterauth(Auth):
+      self.hide()
+    else:
+      self.ConsumerKeyWindow.clear()
+      self.ConsumerSecretWindow.clear()
     pass
 
 
 class mainWindow(QMainWindow):
   iconPath = "image/send.png"
-  w = WindowMgr()
-  w.find_window_wildcard("MTwit")
-
   def __init__(self, parent=None):
     super(mainWindow, self).__init__(parent)
-
+    
     self.mwidget = QMainWindow(self)
     self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
     self.setWindowTitle("MTwit")
+    self.wId = self.winId()
+    self.w = WindowMgr()
 
     # window size
     self.setFixedSize(480, 120)
@@ -260,8 +273,12 @@ class mainWindow(QMainWindow):
 
     self.oldPos = self.pos()
 
-    self.show()
-    self.w.find_window_wildcard("MTwit")
+    self.Firstshow()
+    
+
+  def Firstshow(self): # check user data and init api
+    
+    pass
 
   # windowMove --
   def center(self):
@@ -285,8 +302,10 @@ class mainWindow(QMainWindow):
     text = self.textWindow.document().toPlainText()
     self.textWindow.setPlainText("")
     try:
-      api.update_status(text)
-    except tweepy.error.TweepError:
+      self.api.update_status(text)
+    except tweepy.error.TweepError as e:
+      tb = sys.exc_info()[2]
+      print("message:{0}".format(e.with_traceback(tb)))
       pass
 
   def quitEvent(self):
@@ -300,15 +319,9 @@ class mainWindow(QMainWindow):
 
   def iconActivated(self, reason):
     if reason == 3:
-      self.trayClickAction()
+      self.ShowOrHide()
 
-  def trayClickAction(self):
-    if self.isHidden():
-      self.showEvent_()
-    else:
-      self.hide()
-
-  def ShowOrHide(self, arg1, arg2, arg3):
+  def ShowOrHide(self, *args):
     if self.isHidden():
       self.showEvent_()
     else:
@@ -317,6 +330,7 @@ class mainWindow(QMainWindow):
   def createTrayIcon(self):
     self.trayIconMenu = QMenu(self)
     self.trayIconMenu.addAction(self.debugMakeWindowAction)
+    self.trayIconMenu.addAction(self.debugMakeWindow2Action)
     self.trayIconMenu.addSeparator()
     self.trayIconMenu.addAction(self.minimizeAction)
     self.trayIconMenu.addAction(self.restoreAction)
@@ -331,19 +345,24 @@ class mainWindow(QMainWindow):
     self.restoreAction = QAction("&Restore", self, triggered=self.showNormal)
     self.quitAction = QAction("&Quit", self, triggered=self.quitEvent)
     self.debugMakeWindowAction = QAction("&DebugMakeAuth", self, triggered=self.makeAuthWindow)
+    self.debugMakeWindow2Action = QAction("&DebugMake2Auth", self, triggered=self.makeAuthWindow2)
 
   def showEvent_(self):
     self.textWindow.setPlainText("")
     self.show()
-    self.makeAuthWindow()
-    self.w.set_foreground()
+    self.w.set_foreground(self.wId)
+    self.textWindow.setFocus()
 
   # Auth Window
 
   def makeAuthWindow(self):
     authWindow = AuthWindow(self)
-    # authWindow.show("TwitterPIN")  # Debug
-    authWindow.show("Consumer")  # Debug
+    authWindow.show("TwitterPIN")  # Debug
+    # authWindow.show("Consumer")  # Debug
+
+  def makeAuthWindow2(self):
+    authWindow = AuthWindow(self)
+    authWindow.show("Consumer")
 
   def setParam(self, param):
     self.textWindow.setPlainText(param)
