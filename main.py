@@ -3,7 +3,7 @@
 
 from PyQt5.QtWidgets import QApplication
 import sys
-
+import mTwit.ui as ui
 
 # api = Auth.api  # Twitter Rest API Object (Option GUI Required)
 # auth = Auth.auth # Tweepy Auth Object (Option GUI Required)
@@ -11,5 +11,5 @@ import sys
 app = QApplication(sys.argv)
 app.setStyleSheet("QMainWindow{background-image: url(image/window.png);border: 0px solid black};")
 
-ex = mainWindow()
+ex = ui.mainWindow()
 sys.exit(app.exec_())
