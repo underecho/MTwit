@@ -27,3 +27,12 @@ class VerifyError(Exception):
 
   def __str__(self):
     return self.reason
+
+class TaskbarError(Exception):
+  def __init__(self, *args, **kwargs):
+    self.reason = "Can't get Taskbar Position"
+    Exception.__init__(self, self.reason)
+    pass
+
+  def __str__(self):
+    return self.reason
