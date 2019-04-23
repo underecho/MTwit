@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QMessageBox, QApplication, QWidget, QToolTip, QPushButton,
-               QDesktopWidget, QMainWindow, QAction, qApp, QToolBar, QVBoxLayout,
-               QComboBox, QLabel, QLineEdit, QGridLayout, QMenuBar, QMenu, QStatusBar,
-               QPlainTextEdit, QDialog, QFrame, QProgressBar, QShortcut, QSystemTrayIcon
+               QDesktopWidget, QMainWindow, QAction, qApp, QToolBar,
+               QComboBox, QLabel, QLineEdit, QMenuBar, QMenu, QStatusBar,
+               QPlainTextEdit, QDialog, QFrame, QShortcut, QSystemTrayIcon
                )
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QKeySequence
@@ -93,14 +93,51 @@ class Notification_Mode(Enum):
 class NotificationWindow(QWidget):  # ErrorWindowと統合してもいいかもしれない
   def __init__(self):
     super(NotificationWindow, self).__init__()
-    self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
-    desktopSize = (QDesktopWidget().screenGeometry().width(), QDesktopWidget().screenGeometry().height())
+    self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.FramelessWindowHint)
+    self.desktopSize = (\
+      QDesktopWidget().screenGeometry().width(),\
+      QDesktopWidget().screenGeometry().height(),\
+      QDesktopWidget().availableGeometry().width(), \
+      QDesktopWidget().availableGeometry().height() \
+      )
     self.resize(desktopSize[0] / 1.5, 30)
 
   def show(self, Mode=Notification_Mode.Unknown):
-    self.Mode = Mode
-
+    if Mode == Notification_Mode.Favorite:
+      
     pass
+
+  def endAnim(self):
+    self.hide()
+
+  def setupAnim(self):
+    taskbar = WindowMgr.getTaskbar()
+    self.anim = QtCore.QPropertyAnimation(self, b"pos")
+    self.anim.setDuration(350)
+    self.anim.setEasingCurve(QtCore.QEasingCurve.OutCubic)
+    if taskbar[0] == "lower":
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - (taskbar[2] + self.height) ) )
+    else:
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - self.height) )
+    self.anim2 = QtCore.QPropertyAnimation(self, b"pos")
+    self.anim2.setDuration(350)
+    self.anim2.setEasingCurve(QtCore.QEasingCurve.InCubic)
+    if taskbar[0] == "lower":
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - (taskbar[2] + self.height) ) )
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+    else:
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - self.height) )
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      
+    self.anim2.finished.connect(self.endAnim)
+
+    self.animGroup = QtCore.QSequentialAnimationGroup()
+    self.animGroup.addPause(1)
+    self.animGroup.addAnimation(self.anim)
+    self.animGroup.addPause(1000)
+    self.animGroup.addAnimation(self.anim2)
 
 class AuthWindow(QDialog):  # CK, CS, PIN
   def __init__(self, parent=None):
