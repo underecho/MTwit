@@ -10,6 +10,7 @@ from mTwit.Auth import TwitterMgr as Auth
 from mTwit.Error import *
 import tweepy.error
 import win32gui, re
+import time # Debug
 from enum import Enum, auto
 from system_hotkey import SystemHotkey
 
@@ -90,22 +91,45 @@ class Notification_Mode(Enum):
   Error = auto()
   Unknown = auto()
 
-class NotificationWindow(QWidget):  # ErrorWindowと統合してもいいかもしれない
-  def __init__(self):
-    super(NotificationWindow, self).__init__()
+class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかもしれない
+  def __init__(self, parent=None, *args):
+    super(NotificationWindow, self).__init__(parent)
     self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.FramelessWindowHint)
+    desktop = QDesktopWidget()
     self.desktopSize = (\
-      QDesktopWidget().screenGeometry().width(),\
-      QDesktopWidget().screenGeometry().height(),\
-      QDesktopWidget().availableGeometry().width(), \
-      QDesktopWidget().availableGeometry().height() \
+      desktop.screenGeometry().width(),\
+      desktop.screenGeometry().height(),\
+      desktop.availableGeometry().width(), \
+      desktop.availableGeometry().height() \
       )
-    self.resize(desktopSize[0] / 1.5, 30)
+    self.resize(self.desktopSize[0] / 1.5, 30)
+    self.setupAnim()
 
-  def show(self, Mode=Notification_Mode.Unknown):
-    if Mode == Notification_Mode.Favorite:
-      
-    pass
+  def show(self, MODE=Notification_Mode.Unknown, *args):
+    self.Mode = MODE
+    if self.Mode == Notification_Mode.Favorite:
+      self.setStyleSheet("background-color: rgba(255,193,7,80);"
+                         "border: 0px solid gray;"
+                         "font: 10pt 'Meiryo UI' ;"
+                         "color: #212121;")
+    elif self.Mode == Notification_Mode.Retweet: # if -> elif
+      self.setStyleSheet("background-color: rgba(0,96,16,80);"
+                         "border: 0px solid gray;"
+                         "font: 10pt 'Meiryo UI' ;"
+                         "color: #E0E0E0;")
+    elif self.Mode == Notification_Mode.Error:
+      self.setStyleSheet("background-color: rgba(154,0,7,80);"
+                         "border: 0px solid gray;"
+                         "font: 10pt 'Meiryo UI' ;"
+                         "color: #E0E0E0;")
+    else:
+      self.setStyleSheet("background-color: #263238;"
+                         "border: 0px solid gray;"
+                         "font: 10pt 'Meiryo UI' ;"
+                         "color: #E0E0E0;")
+    super().show()
+    self.animGroup.start()
+    
 
   def endAnim(self):
     self.hide()
@@ -116,21 +140,26 @@ class NotificationWindow(QWidget):  # ErrorWindowと統合してもいいかも�
     self.anim.setDuration(350)
     self.anim.setEasingCurve(QtCore.QEasingCurve.OutCubic)
     if taskbar[0] == "lower":
-      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
-      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - (taskbar[2] + self.height) ) )
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1]))
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1] - (taskbar[2] + self.height()) ) )
+
     else:
-      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
-      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - self.height) )
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1]))
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1] - self.height()) )
+
     self.anim2 = QtCore.QPropertyAnimation(self, b"pos")
     self.anim2.setDuration(350)
     self.anim2.setEasingCurve(QtCore.QEasingCurve.InCubic)
-    if taskbar[0] == "lower":
-      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - (taskbar[2] + self.height) ) )
-      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+
+    if taskbar[0] == "lower": 
+      self.anim2.setStartValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1] - (taskbar[2] + self.height()) ) )
+      self.anim2.setEndValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1]))
+
     else:
-      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - self.height) )
-      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      self.anim2.setStartValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1] - self.height()) )
+      self.anim2.setEndValue(QtCore.QPoint(self.desktopSize[2] / 2 - (self.width() / 2), self.desktopSize[1]))
       
+    # endValue Property of anim2 is set
     self.anim2.finished.connect(self.endAnim)
 
     self.animGroup = QtCore.QSequentialAnimationGroup()
@@ -408,7 +437,7 @@ class mainWindow(QMainWindow):
     self.quitAction = QAction("&Quit", self, triggered=self.quitEvent)
     self.debugMakeWindowAction = QAction("&DebugMakeAuth", self, triggered=self.makeAuthWindow)
     self.debugMakeWindow2Action = QAction("&DebugMake2Auth", self, triggered=self.makeAuthWindow2)
-    self.debugMakeWindow3Action = QAction("&DebugMake3(getTaskbar)", self, triggered=self.makeDebugwindow)
+    self.debugMakeWindow3Action = QAction("&DebugMake3(Notification)", self, triggered=self.makeDebugwindow)
 
 
   def showEvent_(self):
@@ -430,8 +459,9 @@ class mainWindow(QMainWindow):
   def makeNotificationWindow(self):
     pass
 
-  def makeDebugwindow(self):
-    print(WindowMgr.getTaskbar())
+  def makeDebugwindow(self, *args):
+    Fav = NotificationWindow(self)
+    Fav.show(Notification_Mode.Favorite)
 
   def setParam(self, param):
     self.textWindow.setPlainText(param)
