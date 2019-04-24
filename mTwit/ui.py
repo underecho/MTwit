@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QMessageBox, QApplication, QWidget, QToolTip, QPushButton,
-               QDesktopWidget, QMainWindow, QAction, qApp, QToolBar, QVBoxLayout,
-               QComboBox, QLabel, QLineEdit, QGridLayout, QMenuBar, QMenu, QStatusBar,
-               QPlainTextEdit, QDialog, QFrame, QProgressBar, QShortcut, QSystemTrayIcon
+               QDesktopWidget, QMainWindow, QAction, qApp, QToolBar,
+               QComboBox, QLabel, QLineEdit, QMenuBar, QMenu, QStatusBar,
+               QPlainTextEdit, QDialog, QFrame, QShortcut, QSystemTrayIcon
                )
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QKeySequence
@@ -10,6 +10,7 @@ from mTwit.Auth import TwitterMgr as Auth
 from mTwit.Error import *
 import tweepy.error
 import win32gui, re
+from enum import Enum, auto
 from system_hotkey import SystemHotkey
 
 class WindowMgr:
@@ -38,6 +39,24 @@ class WindowMgr:
     """put the window in the foreground"""
     win32gui.SetForegroundWindow(Id)
 
+  def getTaskbar():  
+    """Return Taskbar position and Size (position, width, height)"""
+    desktopSize = QDesktopWidget().availableGeometry()
+    screenSize = (QDesktopWidget().screenGeometry().width(), QDesktopWidget().screenGeometry().height())
+    taskbarSize = (screenSize[0] - desktopSize.width(), screenSize[1] - desktopSize.height())
+    if taskbarSize[0] != 0: # position is left or right
+      if desktopSize.x() != 0: # left
+        return ("left", taskbarSize[0], screenSize[1])
+      else:
+        return ("right", taskbarSize[0], screenSize[1])
+
+    if taskbarSize[1] != 0: # position is upper or lower
+      if desktopSize.y() != 0: # upper
+        return ("upper", screenSize[0], taskbarSize[1])
+      else:
+        return ("lower", screenSize[0], taskbarSize[1])
+
+    raise TaskbarError
 
 class hoverButton(QPushButton):
   def __init__(self, parent=None):
@@ -51,23 +70,74 @@ class hoverButton(QPushButton):
     self.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
                "border: 0px solid gray;")
 
-"""
-class ErrorWindow(QWidget):  # ここ出来上がらんとやばみ
-  def __init__(self):
-    super(QMessageBox).__init__()
-    self.msgBox = QMessageBox()
-    self.msgBox.setText("Connect or abort?")
-    self.connectButton = self.msgBox.addButton("Connect", QMessageBox.ActionRole)
-    self.abortButton = self.msgBox.addButton(QMessageBox.Abort)
+class quitButton(hoverButton):
+  def __init__(self, parent=None):
+    super(quitButton, self).__init__(parent)
+    self.clicked.connect(parent.hide)
+    self.setIcon(QtGui.QIcon("image/quit.png"))
+    self.setStyleSheet("background-color: Transparent;"
+                "left: -2px;"
+                "border: 0px solid gray;")
+    self.resize(24, 24)
 
-  def show(self):
-    return self.msgBox.exec_()
-"""
+  def setButtonPosition(self, window_size):
+    self.move(window_size.width() - 26, 2)
+
+ 
+class Notification_Mode(Enum):
+  Favorite = auto()
+  Retweet = auto()
+  Error = auto()
+  Unknown = auto()
 
 class NotificationWindow(QWidget):  # ErrorWindowと統合してもいいかもしれない
   def __init__(self):
-    self.super(QWidget).__init__()
+    super(NotificationWindow, self).__init__()
+    self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.FramelessWindowHint)
+    self.desktopSize = (\
+      QDesktopWidget().screenGeometry().width(),\
+      QDesktopWidget().screenGeometry().height(),\
+      QDesktopWidget().availableGeometry().width(), \
+      QDesktopWidget().availableGeometry().height() \
+      )
+    self.resize(desktopSize[0] / 1.5, 30)
 
+  def show(self, Mode=Notification_Mode.Unknown):
+    if Mode == Notification_Mode.Favorite:
+      
+    pass
+
+  def endAnim(self):
+    self.hide()
+
+  def setupAnim(self):
+    taskbar = WindowMgr.getTaskbar()
+    self.anim = QtCore.QPropertyAnimation(self, b"pos")
+    self.anim.setDuration(350)
+    self.anim.setEasingCurve(QtCore.QEasingCurve.OutCubic)
+    if taskbar[0] == "lower":
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - (taskbar[2] + self.height) ) )
+    else:
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - self.height) )
+    self.anim2 = QtCore.QPropertyAnimation(self, b"pos")
+    self.anim2.setDuration(350)
+    self.anim2.setEasingCurve(QtCore.QEasingCurve.InCubic)
+    if taskbar[0] == "lower":
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - (taskbar[2] + self.height) ) )
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+    else:
+      self.anim.setStartValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1] - self.height) )
+      self.anim.setEndValue(QtCore.QPoint(self.desktopSize[2] - (self.width / 2), self.desktopSize[1]))
+      
+    self.anim2.finished.connect(self.endAnim)
+
+    self.animGroup = QtCore.QSequentialAnimationGroup()
+    self.animGroup.addPause(1)
+    self.animGroup.addAnimation(self.anim)
+    self.animGroup.addPause(1000)
+    self.animGroup.addAnimation(self.anim2)
 
 class AuthWindow(QDialog):  # CK, CS, PIN
   def __init__(self, parent=None):
@@ -144,6 +214,9 @@ class AuthWindow(QDialog):  # CK, CS, PIN
                   "border: 0px solid gray;")
     self.button.clicked.connect(self.setConsumerEvent)
 
+    self.qbtn = quitButton(self)
+    self.qbtn.setButtonPosition(self.size())
+
   def ui_setTwitterPIN(self):  # 1 TextEdit(7 digit) and 1 Button
     label1 = QLabel("PINCode", self)
     label1.move(10, 10)
@@ -170,6 +243,9 @@ class AuthWindow(QDialog):  # CK, CS, PIN
     self.button.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
                   "border: 0px solid gray;")
     self.button.clicked.connect(self.setPINEvent)
+
+    self.qbtn = quitButton(self)
+    self.qbtn.setButtonPosition(self.size())
 
   def setPINEvent(self):
     errW = Errorwindow(self)
@@ -198,7 +274,6 @@ class mainWindow(QMainWindow):
   iconPath = "image/send.png"
   def __init__(self, parent=None):
     super(mainWindow, self).__init__(parent)
-    
     self.mwidget = QMainWindow(self)
     self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
     self.setWindowTitle("MTwit")
@@ -226,14 +301,8 @@ class mainWindow(QMainWindow):
     self.textWindow.setPlaceholderText("What's Happening?")
 
     # Quit Button
-    self.qbtn = QPushButton('', self)
-    self.qbtn.clicked.connect(self.hide)
-    self.qbtn.setIcon(QtGui.QIcon("image/quit.png"))
-    self.qbtn.setStyleSheet("background-color: Transparent;"
-                "left: -2px;"
-                "border: 1px solid gray;")
-    self.qbtn.resize(24, 24)
-    self.qbtn.move(455, 2)
+    self.qbtn = quitButton(self)
+    self.qbtn.setButtonPosition(self.size())
 
     # Tweet Button
     self.tbtn = hoverButton(self)
@@ -323,6 +392,7 @@ class mainWindow(QMainWindow):
     self.trayIconMenu = QMenu(self)
     self.trayIconMenu.addAction(self.debugMakeWindowAction)
     self.trayIconMenu.addAction(self.debugMakeWindow2Action)
+    self.trayIconMenu.addAction(self.debugMakeWindow3Action)
     self.trayIconMenu.addSeparator()
     self.trayIconMenu.addAction(self.minimizeAction)
     self.trayIconMenu.addAction(self.restoreAction)
@@ -338,6 +408,8 @@ class mainWindow(QMainWindow):
     self.quitAction = QAction("&Quit", self, triggered=self.quitEvent)
     self.debugMakeWindowAction = QAction("&DebugMakeAuth", self, triggered=self.makeAuthWindow)
     self.debugMakeWindow2Action = QAction("&DebugMake2Auth", self, triggered=self.makeAuthWindow2)
+    self.debugMakeWindow3Action = QAction("&DebugMake3(getTaskbar)", self, triggered=self.makeDebugwindow)
+
 
   def showEvent_(self):
     self.textWindow.setPlainText("")
@@ -350,11 +422,16 @@ class mainWindow(QMainWindow):
   def makeAuthWindow(self):
     authWindow = AuthWindow(self)
     authWindow.show("TwitterPIN")  # Debug
-    # authWindow.show("Consumer")  # Debug
 
   def makeAuthWindow2(self):
     authWindow = AuthWindow(self)
     authWindow.show("Consumer")
+
+  def makeNotificationWindow(self):
+    pass
+
+  def makeDebugwindow(self):
+    print(WindowMgr.getTaskbar())
 
   def setParam(self, param):
     self.textWindow.setPlainText(param)

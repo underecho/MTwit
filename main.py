@@ -11,5 +11,5 @@ import mTwit.ui as ui
 app = QApplication(sys.argv)
 app.setStyleSheet("QMainWindow{background-image: url(image/window.png);border: 0px solid black};")
 
-ex = ui.mainWindow()
+window = ui.mainWindow()
 sys.exit(app.exec_())
