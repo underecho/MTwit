@@ -277,7 +277,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
     self.qbtn.setButtonPosition(self.size())
 
   def setPINEvent(self):
-    errW = Errorwindow(self)
+    # errW = ErrorNotification(self)
     # print(errW.show("test"))
     self.hide()
     try:
@@ -285,7 +285,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
       self.pin_window.clear()
       self.parent.api = Auth.init_api(Auth) # Debug
     except VerifyError:
-      errW.show(VerifyError().__str__())
+      VerifyError()
       pass
       self.show("TwitterPIN")
 
@@ -462,6 +462,7 @@ class mainWindow(QMainWindow):
   def makeDebugwindow(self, *args):
     Fav = NotificationWindow(self)
     Fav.show(Notification_Mode.Favorite)
+    raise MTwitError
 
   def setParam(self, param):
     self.textWindow.setPlainText(param)
