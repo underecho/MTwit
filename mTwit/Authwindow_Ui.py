@@ -1,11 +1,8 @@
-from PyQt5.QtWidgets import (QMessageBox, QApplication, QWidget, QToolTip, QPushButton,
-               QDesktopWidget, QMainWindow, QAction, qApp, QToolBar,
-               QComboBox, QLabel, QLineEdit, QMenuBar, QMenu, QStatusBar,
-               QPlainTextEdit, QDialog, QFrame, QShortcut, QSystemTrayIcon
-               )
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QKeySequence
-from PyQt5.QtCore import QCoreApplication, Qt, QBasicTimer, QPoint, QSize
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt, QPoint, QSize
+from PyQt5.QtWidgets import (QLabel, QLineEdit, QDialog)
+
+from mTwit.Error import VerifyError
 
 
 class AuthWindow(QDialog):  # CK, CS, PIN

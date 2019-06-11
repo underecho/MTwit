@@ -1,10 +1,7 @@
 from enum import Enum, auto
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtWidgets import (QMessageBox, QApplication, QWidget, QToolTip, QPushButton,
-               QDesktopWidget, QMainWindow, QAction, qApp, QToolBar,
-               QComboBox, QLabel, QLineEdit, QMenuBar, QMenu, QStatusBar,
-               QPlainTextEdit, QDialog, QFrame, QShortcut, QSystemTrayIcon
-               )
+
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import (QLabel, QDialog)
 
 
 class Notification_Mode(Enum):

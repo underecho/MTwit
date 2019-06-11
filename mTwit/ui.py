@@ -1,10 +1,16 @@
-from mTwit.Authwindow_Ui import *
-from mTwit.Error import *
+import re
 import tweepy.error
-import win32gui, re
-import time # Debug
-
+import win32gui
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import QCoreApplication, Qt, QPoint, QSize
+from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtWidgets import (QPushButton,
+                             QDesktopWidget, QMainWindow, QAction, QMenu, QPlainTextEdit, QShortcut, QSystemTrayIcon
+                             )
 from system_hotkey import SystemHotkey
+
+from mTwit.Error import *
+
 
 class WindowMgr:
   """Encapsulates some calls to the winapi for window management"""
@@ -229,10 +235,12 @@ class mainWindow(QMainWindow):
   # Auth Window
 
   def makeAuthWindow(self):
+    from mTwit.Authwindow_Ui import AuthWindow
     authWindow = AuthWindow(self)
     authWindow.show("TwitterPIN")  # Debug
 
   def makeAuthWindow2(self):
+    from mTwit.Authwindow_Ui import AuthWindow
     authWindow = AuthWindow(self)
     authWindow.show("Consumer")
 
@@ -240,8 +248,6 @@ class mainWindow(QMainWindow):
     pass
 
   def makeDebugwindow(self, *args):
-    from mTwit.Notification_Ui import NotificationWindow
-    from mTwit.Notification_Ui import Notification_Mode
     # fav = NotificationWindow(self)
     # fav.show(Notification_Mode.Error)
     try:
