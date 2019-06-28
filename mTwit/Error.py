@@ -24,15 +24,14 @@ class MTwitError(ErrorNotification):
 
 class VerifyError(ErrorNotification):
   def __init__(self, reason="Wrong PINCode or poop Twitter server is here."):
-    Exception.__init__(self, self.reason)
-    super().__init__(self.reason)
+    Exception.__init__(self, reason)
+    super().__init__(reason)
     self.show()
 
 class TaskbarError(ErrorNotification):
-  def __init__(self):
-    self.reason = "Can't get Taskbar Position"
-    Exception.__init__(self, self.reason)
-    super().__init__(self.reason)
+  def __init__(self, reason = "Can't get Taskbar Position"):
+    Exception.__init__(self, reason)
+    super().__init__(reason)
     pass
 
 if __name__ == "__main__":

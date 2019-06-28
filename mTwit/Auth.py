@@ -8,17 +8,25 @@ import subprocess
 import hashlib
 import base64
 import tweepy
+import pathlib
 from mTwit.Error import *
 from Crypto.Cipher import AES
 from tweepy.error import TweepError
+
+DATA_DIRECTORY = pathlib.Path("./data")
 
 """Tweepy Settings Class"""
 class TwitterMgr:
   """Test"""
   def __init__(self):
+    """
     os.makedirs("./data", exist_ok=True)
     os.makedirs("./data/user", exist_ok=True)
     os.makedirs("./data/cache", exist_ok=True)
+    """
+
+    [x.mkdir(exist_ok=True) for x in [DATA_DIRECTORY, DATA_DIRECTORY / "user", DATA_DIRECTORY / "cache"]]
+
     self.ACCESS_TOKEN = None
     self.ACCESS_SECRET = None
     self.CONSUMER_KEY = None

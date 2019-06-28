@@ -1,4 +1,4 @@
-import re
+import re, sys
 import tweepy.error
 import win32gui
 from PyQt5 import QtCore, QtGui
