@@ -3,7 +3,7 @@ from enum import Enum, auto
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (QLabel, QDialog, QHBoxLayout)
+from PyQt5.QtWidgets import (QLabel, QDialog, QHBoxLayout, QSizePolicy)
 
 
 class Notification_Mode(Enum):
@@ -32,18 +32,25 @@ class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかも�
 
     self.resize(self.desktopSize[0] / 1.5, 30)
     self.icon_label = QLabel("", self)
+    self.icon_label.resize(30, 30)
     self.icon_label.move(0, 0)
-    self.icon_label.setScaledContents(True)
+    self.icon_label.setStyleSheet("background:rgba(0, 0, 0, 0);")
 
-    layout.addItem(self.icon_label)
+    self.icon_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+
+    layout.setSizeConstraint(layout.SetNoConstraint)
+    layout.addWidget(self.icon_label)
+    layout.setContentsMargins(0,0,0,0)
 
     label = QLabel(message, self)
-    label.move(32, 4)
+    label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    # label.move(32, 4)
     label.setStyleSheet("background:rgba(0, 0, 0, 0);")
 
-    layout.addSpacing(5)
-    layout.addItem(label)
-
+    layout.addSpacing(20)
+    layout.addWidget(label)
+    self.setLayout(layout)
     self.setupAnim(time)
 
   def show(self, mode=Notification_Mode.Unknown, *args):

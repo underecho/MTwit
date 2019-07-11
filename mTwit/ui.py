@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (QPushButton,
 from system_hotkey import SystemHotkey
 
 from mTwit.Error import *
+from mTwit.Notification_Ui import *
 
 
 class WindowMgr:
@@ -45,15 +46,15 @@ class WindowMgr:
     taskbarSize = (screenSize[0] - desktopSize.width(), screenSize[1] - desktopSize.height())
     if taskbarSize[0] != 0: # position is left or right
       if desktopSize.x() != 0: # left
-        return ("left", taskbarSize[0], screenSize[1])
+        return "left", taskbarSize[0], screenSize[1]
       else:
-        return ("right", taskbarSize[0], screenSize[1])
+        return "right", taskbarSize[0], screenSize[1]
 
     if taskbarSize[1] != 0:  # position is upper or lower
       if desktopSize.y() != 0: # upper
-        return ("upper", screenSize[0], taskbarSize[1])
+        return "upper", screenSize[0], taskbarSize[1]
       else:
-        return ("lower", screenSize[0], taskbarSize[1])
+        return "lower", screenSize[0], taskbarSize[1]
 
     raise TaskbarError
 
@@ -248,13 +249,14 @@ class mainWindow(QMainWindow):
     pass
 
   def makeDebugwindow(self, *args):
-    # fav = NotificationWindow(self)
-    # fav.show(Notification_Mode.Error)
+    fav = NotificationWindow(self, message="Test Message.")
+    fav.show(Notification_Mode.Error)
+    """
     try:
       raise MTwitError
     except:
       pass
-
+    """
   def setParam(self, param):
     self.textWindow.setPlainText(param)
 
