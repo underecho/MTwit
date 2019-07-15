@@ -1,5 +1,5 @@
 from mTwit.Notification_Ui import NotificationWindow as Ew
-from mTwit.Notification_Ui import Notification_Mode as Mode
+from mTwit.Notification_Ui import NotificationMode as Mode
 
 
 class ErrorNotification(Exception):
@@ -11,7 +11,7 @@ class ErrorNotification(Exception):
 
     def show(self):
         """Errorの通知を表示する"""
-        Ew(time=2000, message=self.reason).show(Mode.Error)
+        Ew(time=2000, message=self.reason).show(Mode.ERROR)
 
     def __str__(self):
         return self.reason

@@ -6,11 +6,11 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QLabel, QDialog, QHBoxLayout, QSizePolicy)
 
 
-class Notification_Mode(Enum):
-    Favorite = auto()
-    Retweet = auto()
-    Error = auto()
-    Unknown = auto()
+class NotificationMode(Enum):
+    FAVORITE = auto()
+    RETWEET = auto()
+    ERROR = auto()
+    UNKNOWN = auto()
 
 
 class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかもしれない
@@ -52,20 +52,20 @@ class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかも�
         self.setLayout(layout)
         self.setupAnim(time)
 
-    def show(self, mode=Notification_Mode.Unknown, *args):
-        if mode == Notification_Mode.Favorite:
+    def show(self, mode=NotificationMode.UNKNOWN, *args):
+        if mode == NotificationMode.FAVORITE:
             self.icon_label.setPixmap(QPixmap("image/Favorite.png"))
             self.setStyleSheet("background-color: rgba(255,193,7,80);"
                                "border: 0px solid gray;"
                                "font: 10pt 'Meiryo UI' ;"
                                "color: #212121;")
-        elif mode == Notification_Mode.Retweet:  # if -> elif
+        elif mode == NotificationMode.RETWEET:  # if -> elif
             self.icon_label.setPixmap(QPixmap("image/Retweet.png"))
             self.setStyleSheet("background-color: rgba(0,96,16,80);"
                                "border: 0px solid gray;"
                                "font: 10pt 'Meiryo UI' ;"
                                "color: #E0E0E0;")
-        elif mode == Notification_Mode.Error:
+        elif mode == NotificationMode.ERROR:
             self.icon_label.setPixmap(QPixmap("image/Error.png"))
             self.setStyleSheet("background-color: rgba(154,0,7,80);"
                                "border: 0px solid gray;"
