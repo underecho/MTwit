@@ -9,7 +9,8 @@ import mTwit.ui as ui
 # auth = Auth.auth # Tweepy Auth Object (Option GUI Required)
 
 app = QApplication(sys.argv)
-app.setStyleSheet("QMainWindow{background-image: url('image/window.png');border: 0px solid black};")
+app.setStyleSheet(
+    "QMainWindow{background-image: url('image/window.png');border: 0px solid black};")
 
 window = ui.mainWindow()
 sys.exit(app.exec_())
