@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QPoint, QSize
 from PyQt5.QtWidgets import (QLabel, QLineEdit, QDialog)
 
 from mTwit.Error import VerifyError
-
+from mTwit.ui import HoverButton, QuitButton
 
 class AuthWindow(QDialog):  # CK, CS, PIN
     def __init__(self, parent=None):
@@ -72,9 +72,8 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         label2.resize(180, 20)
         label2.setStyleSheet("color: #EEEEEE; "
                              "font: 12pt 'Meiryo UI'; ")
-        from mTwit.ui import hoverButton
 
-        self.button = hoverButton(self)
+        self.button = HoverButton(self)
         self.button.resize(48, 48)
         self.button.move(340, 65)
         self.button.setObjectName('setCButton')
@@ -84,7 +83,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
                                   "border: 0px solid gray;")
         self.button.clicked.connect(self.setConsumerEvent)
 
-        self.qbtn = quitButton(self)
+        self.qbtn = QuitButton(self)
         self.qbtn.setButtonPosition(self.size())
 
     def ui_setTwitterPIN(self):  # 1 TextEdit(7 digit) and 1 Button
@@ -104,7 +103,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         self.pin_window.setAlignment(Qt.AlignCenter)
         self.pin_window.returnPressed.connect(self.setPINEvent)
 
-        self.button = hoverButton(self)
+        self.button = HoverButton(self)
         self.button.resize(48, 48)
         self.button.move(340, 65)
         self.button.setObjectName('setPINButton')
@@ -114,7 +113,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
                                   "border: 0px solid gray;")
         self.button.clicked.connect(self.setPINEvent)
 
-        self.qbtn = quitButton(self)
+        self.qbtn = QuitButton(self)
         self.qbtn.setButtonPosition(self.size())
 
     def setPINEvent(self):
