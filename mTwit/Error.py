@@ -9,7 +9,7 @@ class ErrorNotification(Exception):
         self.reason = reason
         super().__init__(*args)
 
-    def show(self):
+    def show(self):  # Delete this
         """Errorの通知を表示する"""
         Ew(time=2000, message=self.reason).show(Mode.ERROR)
 
@@ -36,11 +36,3 @@ class TaskbarError(ErrorNotification):
         Exception.__init__(self, reason)
         super().__init__(reason)
         pass
-
-
-if __name__ == "__main__":
-    # test reason-able classes
-    assert str(MTwitError("john")) == "john"
-    assert str(ErrorNotification("john")) == "john"
-    assert str(VerifyError("john")) == "john"
-    pass
