@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QDesktopWidget
 class MTwitWindow(QWindow):
 
     def __init__(self, parent=None):
+        super().__init__(parent)
         self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
-        return super().__init__(parent)
 
     def moveToCenter(self):
         desktop = QDesktopWidget()
