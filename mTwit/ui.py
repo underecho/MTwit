@@ -2,9 +2,11 @@ import re
 import sys
 import tweepy.error
 import win32gui
+import warnings
+from mTwit.Error import TaskbarError
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QCoreApplication, Qt, QPoint, QSize
-from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtGui import QIcon, QKeySequence, QWindow
 from PyQt5.QtWidgets import (
     QPushButton,
     QDesktopWidget,
@@ -17,6 +19,60 @@ from PyQt5.QtWidgets import (
 from system_hotkey import SystemHotkey
 
 
+class Win32Window:
+
+    @classmethod
+    def from_qwindow(cls, window: QWindow):
+        return cls(window.winId())
+
+    @classmethod
+    def find(cls, class_name: str, window_name: str):
+        return cls(win32gui.FindWindow(class_name, window_name))
+
+    def __init__(self, handle):
+        self._handle = handle
+
+    @property
+    def handle(self):
+        return self._handle
+
+    def focus(self):
+        win32gui.SetForegroundWindow(self.handle)
+
+
+def taskbar_info() -> (str, int, int):
+    desktop_rect = QDesktopWidget().availableGeometry()
+    screen_rect = QDesktopWidget().screenGeometry()
+
+    taskbar_size = QSize(
+        screen_rect.width() - desktop_rect.width(),
+        screen_rect.height() - desktop_rect.height()
+    )
+
+    # if horizontal
+    if taskbar_size.width() != 0:
+        if desktop_rect.x() != 0:
+            return "left", taskbar_size.width(), screen_rect.height()
+        else:
+            return "right", taskbar_size.width(), screen_rect.height()
+
+    # if vertical
+    if taskbar_size.height() != 0:
+        if desktop_rect.y() != 0:
+            return "upper", screen_rect.width(), taskbar_size.height()
+        else:
+            return "lower", screen_rect.width(), taskbar_size.height()
+
+    # unreachable
+    raise TaskbarError
+
+
+def deprecated(a: any):
+    warnings.warn(f"{a.__name__} is deprecated.", DeprecationWarning)
+    return a
+
+
+@deprecated
 class WindowMgr:
     """
     WindowMgr class provides utilities for generic window operation.
@@ -28,6 +84,7 @@ class WindowMgr:
         """Constructor"""
         self._handle = None
 
+    @deprecated
     def find_window(self, class_name, window_name=None):
         """find a window by its class_name"""
         self._handle = win32gui.FindWindow(class_name, window_name)
@@ -43,33 +100,14 @@ class WindowMgr:
         win32gui.EnumWindows(self._window_enum_callback, wildcard)
         print(self._handle)  # Debug
 
+    @deprecated
     def set_foreground(self, Id):
         """put the window in the foreground"""
         win32gui.SetForegroundWindow(Id)
 
+    @deprecated
     def getTaskbar(self):
-        """Return Taskbar position and Size (position, width, height)"""
-        desktopSize = QDesktopWidget().availableGeometry()
-        screenSize = (QDesktopWidget().screenGeometry().width(),
-                      QDesktopWidget().screenGeometry().height())
-        taskbarSize = (
-            screenSize[0] -
-            desktopSize.width(),
-            screenSize[1] -
-            desktopSize.height())
-        if taskbarSize[0] != 0:  # position is left or right
-            if desktopSize.x() != 0:  # left
-                return "left", taskbarSize[0], screenSize[1]
-            else:
-                return "right", taskbarSize[0], screenSize[1]
-
-        if taskbarSize[1] != 0:  # position is upper or lower
-            if desktopSize.y() != 0:  # upper
-                return "upper", screenSize[0], taskbarSize[1]
-            else:
-                return "lower", screenSize[0], taskbarSize[1]
-
-        raise TaskbarError
+        return taskbar_info()
 
 
 class HoverButton(QPushButton):
