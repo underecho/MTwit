@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from mTwit import MainWindow
+from mTwit.ui import MainWindow
 from PyQt5.QtWidgets import QApplication
 
 # api = Auth.api  # Twitter Rest API Object (Option GUI Required)
