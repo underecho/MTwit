@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QLabel, QLineEdit, QDialog)
 
 from mTwit.exceptions.twitter import VerifyError
 from mTwit.ui.ui_base import HoverButton, QuitButton
-import mTwit.twitter.Auth as Auth # TODO <-- FIX THAT POOR CODE
+from mTwit.twitter.Auth import AppGateway
 
 class AuthWindow(QDialog):  # CK, CS, PIN
     def __init__(self, parent=None):
@@ -17,6 +17,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
             "border: 0px solid black;}")
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.oldPos = self.pos()
+        self.app_gateway: AppGateway = None
 
     # ここで親ウィンドウに値を渡している
     def setParamOriginal(self):
@@ -119,23 +120,27 @@ class AuthWindow(QDialog):  # CK, CS, PIN
 
     def setPINEvent(self):
         self.hide()
-        try:
-            Auth.verify_twitter(Auth, self.pin_window.text())
-            self.pin_window.clear()
-            self.parent.api = Auth.init_api(Auth)  # Debug
-        except VerifyError:
-            VerifyError()
-            pass
-            self.show("TwitterPIN")
+        if self.app_gateway:
+            try:
+                app_gw = self.app_gateway
+                self.parent.api = app_gw.verify(self.pin_window.text())
+                self.pin_window.clear()
+                return
+            except VerifyError:
+                VerifyError()
+                pass
+        self.show("TwitterPIN")
 
     def setConsumerEvent(self):
-        self.parent.auth = Auth.init_auth(
-            Auth,
+        app_gw = self.app_gateway = AppGateway(
             self.ConsumerKeyWindow.text().strip(),
-            self.ConsumerSecretWindow.text().strip())  # Debug
-        if Auth.open_twitterauth(Auth):
+            self.ConsumerSecretWindow.text().strip()
+        )
+        self.parent.auth = app_gw.auth_handler
+        if app_gw.open_auth_page():
             self.hide()
         else:
             self.ConsumerKeyWindow.clear()
             self.ConsumerSecretWindow.clear()
         pass
+
