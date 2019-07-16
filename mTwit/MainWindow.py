@@ -1,3 +1,4 @@
+import tweepy
 from PyQt5.QtCore import (
     Qt,
     QPoint,
@@ -11,7 +12,6 @@ from PyQt5.QtGui import (
 )
 
 from PyQt5.QtWidgets import (
-    QPushButton,
     QDesktopWidget,
     QMainWindow,
     QAction,
@@ -23,8 +23,7 @@ from PyQt5.QtWidgets import (
 
 from system_hotkey import SystemHotkey
 
-from mTwit.ui import Win32Window, HoverButton, QuitButton
-from mTwit.Error import *
+from mTwit.ui.ui_base import Win32Window, HoverButton, QuitButton
 from mTwit.Notification_Ui import *
 
 

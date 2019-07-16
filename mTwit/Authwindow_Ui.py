@@ -2,8 +2,9 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt, QPoint, QSize
 from PyQt5.QtWidgets import (QLabel, QLineEdit, QDialog)
 
-from mTwit.Error import VerifyError
-from mTwit.ui import HoverButton, QuitButton
+from mTwit.exceptions.twitter import VerifyError
+from mTwit.ui.ui_base import HoverButton, QuitButton
+import mTwit.twitter.Auth as Auth # TODO <-- FIX THAT POOR CODE
 
 class AuthWindow(QDialog):  # CK, CS, PIN
     def __init__(self, parent=None):
@@ -117,8 +118,6 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         self.qbtn.setButtonPosition(self.size())
 
     def setPINEvent(self):
-        # errW = ErrorNotification(self)
-        # print(errW.show("test"))
         self.hide()
         try:
             Auth.verify_twitter(Auth, self.pin_window.text())

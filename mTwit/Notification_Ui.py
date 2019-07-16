@@ -1,9 +1,8 @@
-import mTwit.ui as ui
+import mTwit.ui.ui_base as ui
 
 from enum import Enum, auto
 
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import QSize
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QLabel, QDialog, QHBoxLayout, QSizePolicy)
 
