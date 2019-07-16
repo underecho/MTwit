@@ -1,5 +1,5 @@
 import unittest
-from mTwit.Error import (
+from mTwit.exceptions.twitter import (
     MTwitError,
     VerifyError,
     TaskbarError

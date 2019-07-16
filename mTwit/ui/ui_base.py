@@ -1,22 +1,12 @@
-import re
-import sys
-import tweepy.error
-import win32gui
+import win32gui # need manual install pywin32
 import warnings
-from mTwit.Error import TaskbarError
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import QCoreApplication, Qt, QPoint, QSize
-from PyQt5.QtGui import QIcon, QKeySequence, QWindow
+from mTwit.exceptions.ui import TaskbarError
+from PyQt5 import QtGui
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QWindow
 from PyQt5.QtWidgets import (
     QPushButton,
-    QDesktopWidget,
-    QMainWindow,
-    QAction,
-    QMenu,
-    QPlainTextEdit,
-    QShortcut,
-    QSystemTrayIcon)
-from system_hotkey import SystemHotkey
+    QDesktopWidget)
 
 
 class Win32Window:
@@ -44,7 +34,7 @@ def taskbar_info() -> (str, int, int):
     desktop_rect = QDesktopWidget().availableGeometry()
     screen_rect = QDesktopWidget().screenGeometry()
 
-    taskbar_size = QSize(
+    taskbar_size: QSize = QSize(
         screen_rect.width() - desktop_rect.width(),
         screen_rect.height() - desktop_rect.height()
     )

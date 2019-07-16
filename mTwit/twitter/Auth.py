@@ -2,15 +2,10 @@
 # -*- coding:utf-8 -*-
 
 # Tweepyライブラリをインポート
-import os
 import webbrowser
-import subprocess
-import hashlib
-import base64
 import tweepy
 import pathlib
-from mTwit.Error import *
-from Crypto.Cipher import AES
+from mTwit.exceptions.twitter import *
 from tweepy.error import TweepError
 
 DATA_DIRECTORY = pathlib.Path("./data")
@@ -31,12 +26,12 @@ class TwitterMgr:
         [x.mkdir(exist_ok=True) for x in [DATA_DIRECTORY,
                                           DATA_DIRECTORY / "user", DATA_DIRECTORY / "cache"]]
 
-        self.ACCESS_TOKEN = None
-        self.ACCESS_SECRET = None
-        self.CONSUMER_KEY = None
-        self.CONSUMER_SECRET = None
+        self.ACCESS_TOKEN: str = ""
+        self.ACCESS_SECRET: str = ""
+        self.CONSUMER_KEY: str = ""
+        self.CONSUMER_SECRET: str = ""
 
-    def init_auth(self, consumer_key, consumer_secret):  # GUI
+    def init_auth(self, consumer_key: str, consumer_secret: str):  # GUI
         self.CONSUMER_KEY = consumer_key
         self.CONSUMER_SECRET = consumer_secret
         self.auth = tweepy.OAuthHandler(
@@ -56,12 +51,12 @@ class TwitterMgr:
         try:
             redirect_url = self.auth.get_authorization_url()
         except TweepError:
-            self.CONSUMER_KEY = None
-            self.CONSUMER_SECRET = None
+            self.CONSUMER_KEY = ""
+            self.CONSUMER_SECRET = ""
             return False
         if not redirect_url:
-            self.CONSUMER_KEY = None
-            self.CONSUMER_SECRET = None
+            self.CONSUMER_KEY = ""
+            self.CONSUMER_SECRET = ""
             return False
         else:
             webbrowser.open(redirect_url)
