@@ -1,19 +1,15 @@
-#!/usr/bin/env py -3-32
-# -*- coding:utf-8 -*-
-
-# Tweepyライブラリをインポート
 import webbrowser
 import tweepy
 import pathlib
 from mTwit.exceptions.twitter import *
 from tweepy.error import TweepError
 
-DATA_DIRECTORY = pathlib.Path("./data")
-
-"""Tweepy Settings Class"""
-
 
 class AppGateway:
+    """
+    AppGateway represents application authorizer for desktop Twitter applications.
+    Provides stateless API and PIN verification utilities.
+    """
 
     def __init__(self, consumer_key, consumer_secret):
         self._auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
