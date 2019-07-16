@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import (
 
 from system_hotkey import SystemHotkey
 
-from mTwit.ui import WindowMgr, HoverButton, QuitButton
+from mTwit.ui import Win32Window, HoverButton, QuitButton
 from mTwit.Error import *
 from mTwit.Notification_Ui import *
 
@@ -33,12 +33,12 @@ class MainWindow(QMainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.w = Win32Window.from_qwindow(self)
+
         self.mwidget = QMainWindow(self)
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowStaysOnTopHint)
         self.setWindowTitle("MTwit")
-        self.wId = self.winId()
-        self.w = WindowMgr()
 
         # window size
         self.setFixedSize(480, 120)
@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
     def showEvent_(self):
         self.textWindow.setPlainText("")
         self.show()
-        self.w.set_foreground(self.wId)
+        self.w.focus()
         self.textWindow.setFocus()
 
     # Auth Window

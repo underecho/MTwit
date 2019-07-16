@@ -1,3 +1,5 @@
+import mTwit.ui as ui
+
 from enum import Enum, auto
 
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -15,8 +17,6 @@ class NotificationMode(Enum):
 
 class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかもしれない
     def __init__(self, parent=None, time=1000, message=''):
-        from mTwit.ui import WindowMgr
-        self.WindowMgr = WindowMgr()
         super(NotificationWindow, self).__init__(parent)
 
         layout = QHBoxLayout()
@@ -84,7 +84,7 @@ class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかも�
         self.hide()
 
     def setupAnim(self, time=1000):
-        taskbar = self.WindowMgr.getTaskbar()
+        taskbar = ui.taskbar_info()
         self.anim = QtCore.QPropertyAnimation(self, b"pos")
         self.anim.setDuration(350)
         self.anim.setEasingCurve(QtCore.QEasingCurve.OutCubic)
