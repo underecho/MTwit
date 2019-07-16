@@ -65,3 +65,7 @@ target/
 # Shit Access Token
 data.dat
 data2.dat
+
+# virtual environment
+
+venv/
