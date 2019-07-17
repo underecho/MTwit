@@ -25,7 +25,7 @@ from system_hotkey import SystemHotkey
 
 from mTwit.ui.ui_base import Win32Window, HoverButton, QuitButton
 from mTwit.Notification_Ui import *
-
+from .AuthWindow import AuthWindow
 
 class MainWindow(QMainWindow):
     iconPath = "image/send.png"
@@ -183,12 +183,10 @@ class MainWindow(QMainWindow):
     # Auth Window
 
     def makeAuthWindow(self):
-        from mTwit.Authwindow_Ui import AuthWindow
         authWindow = AuthWindow(self)
         authWindow.show("TwitterPIN")  # Debug
 
     def makeAuthWindow2(self):
-        from mTwit.Authwindow_Ui import AuthWindow
         authWindow = AuthWindow(self)
         authWindow.show("Consumer")
 
