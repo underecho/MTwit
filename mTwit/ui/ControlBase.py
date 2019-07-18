@@ -1,5 +1,5 @@
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QDesktopWidget, QPushButton
+from PyQt5.QtWidgets import QPushButton
 
 
 class MTwitButton(QPushButton):
