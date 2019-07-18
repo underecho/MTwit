@@ -1,4 +1,4 @@
-import win32gui # need manual install pywin32
+import win32gui  # need manual install pywin32
 import warnings
 from mTwit.exceptions.ui import TaskbarError
 from PyQt5 import QtGui
@@ -55,11 +55,6 @@ def taskbar_info() -> (str, int, int):
 
     # unreachable
     raise TaskbarError
-
-
-def deprecated(a: any):
-    warnings.warn(f"{a.__name__} is deprecated.", DeprecationWarning)
-    return a
 
 
 class HoverButton(QPushButton):
