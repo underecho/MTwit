@@ -1,12 +1,9 @@
-import win32gui # need manual install pywin32
-import warnings
-from mTwit.exceptions.ui import TaskbarError
-from PyQt5 import QtGui
+import win32gui
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QWindow
-from PyQt5.QtWidgets import (
-    QPushButton,
-    QDesktopWidget)
+from PyQt5.QtWidgets import QDesktopWidget
+
+from mTwit.exceptions.ui import TaskbarError
 
 
 class Win32Window:
@@ -55,35 +52,3 @@ def taskbar_info() -> (str, int, int):
 
     # unreachable
     raise TaskbarError
-
-
-def deprecated(a: any):
-    warnings.warn(f"{a.__name__} is deprecated.", DeprecationWarning)
-    return a
-
-
-class HoverButton(QPushButton):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-    def enterEvent(self, QEvent):
-        self.setStyleSheet("background-color: rgba(200, 200, 200, 0.2);"
-                           "border: 0px solid gray;")
-
-    def leaveEvent(self, QEvent):
-        self.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
-                           "border: 0px solid gray;")
-
-
-class QuitButton(HoverButton):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.clicked.connect(parent.hide)
-        self.setIcon(QtGui.QIcon("image/quit.png"))
-        self.setStyleSheet("background-color: Transparent;"
-                           "left: -2px;"
-                           "border: 0px solid gray;")
-        self.resize(24, 24)
-
-    def setButtonPosition(self, window_size):
-        self.move(window_size.width() - 26, 2)

@@ -1,16 +1,13 @@
-#!/usr/bin/env py -3-32
-# -*- coding: utf-8 -*-
+#!/usr/bin/env -S py -3.7
 
 import sys
 from mTwit.ui import MainWindow
 from PyQt5.QtWidgets import QApplication
 
-# api = Auth.api  # Twitter Rest API Object (Option GUI Required)
-# auth = Auth.auth # Tweepy Auth Object (Option GUI Required)
 
 app = QApplication(sys.argv)
 app.setStyleSheet(
-    "QMainWindow{background-image: url('image/window.png');border: 0px solid black;}")
+    "QMainWindow{background-image: url('resources/backgrounds/window.png');border: 0px solid black;}")
 
 window = MainWindow()
 sys.exit(app.exec_())

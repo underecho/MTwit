@@ -67,5 +67,5 @@ data.dat
 data2.dat
 
 # virtual environment
-
 venv/
+.venv/
