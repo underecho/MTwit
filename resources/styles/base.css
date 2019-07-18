@@ -1,0 +1,20 @@
+* {
+    font-family: 'Meiryo UI', 'Segoe UI', 'ヒラギノ角ゴ Pro W3', sans-serif;
+    src: local();
+}
+
+.widget {
+    background-color: rgba(0,0,0,50);
+}
+
+.window {
+    background: 'resources/backgrounds/window.png';
+}
+
+.button {
+    border: 0px solid gray;
+}
+
+.button:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+}
