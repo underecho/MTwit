@@ -1,6 +1,6 @@
 # exceptions base
-from mTwit.Notification_Ui import NotificationWindow as Ew
-from mTwit.Notification_Ui import NotificationMode as Mode
+from mTwit.ui import NotificationWindow as Ew
+from mTwit.ui.NotificationWindow import NotificationMode as Mode
 
 
 class ErrorNotification(Exception):
