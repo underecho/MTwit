@@ -79,7 +79,7 @@ class QuitButton(HoverButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.clicked.connect(parent.hide)
-        self.setIcon(QtGui.QIcon("image/quit.png"))
+        self.setIcon(QtGui.QIcon("resources/icon/quit.png"))
         self.setStyleSheet("background-color: Transparent;"
                            "left: -2px;"
                            "border: 0px solid gray;")

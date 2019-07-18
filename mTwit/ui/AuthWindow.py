@@ -13,7 +13,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         self.resize(400, 120)
         self.setWindowTitle('Auth')
         self.setStyleSheet(
-            "QDialog{background-image: url(image/window.png);"
+            "QDialog{background-image: url(resources/backgrounds/window.png);"
             "border: 0px solid black;}")
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.oldPos = self.pos()
@@ -79,7 +79,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         self.button.resize(48, 48)
         self.button.move(340, 65)
         self.button.setObjectName('setCButton')
-        self.button.setIcon(QtGui.QIcon("image/send.png"))
+        self.button.setIcon(QtGui.QIcon("resources/icon/send.png"))
         self.button.setIconSize(QSize(32, 32))
         self.button.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
                                   "border: 0px solid gray;")
@@ -109,7 +109,7 @@ class AuthWindow(QDialog):  # CK, CS, PIN
         self.button.resize(48, 48)
         self.button.move(340, 65)
         self.button.setObjectName('setPINButton')
-        self.button.setIcon(QtGui.QIcon("image/send.png"))
+        self.button.setIcon(QtGui.QIcon("resources/button/send.png"))
         self.button.setIconSize(QSize(32, 32))
         self.button.setStyleSheet("background-color: rgba(200, 200, 200, 0);"
                                   "border: 0px solid gray;")

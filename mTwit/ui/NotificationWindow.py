@@ -53,25 +53,25 @@ class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかも�
 
     def show(self, mode=NotificationMode.UNKNOWN, *args):
         if mode == NotificationMode.FAVORITE:
-            self.icon_label.setPixmap(QPixmap("image/Favorite.png"))
+            self.icon_label.setPixmap(QPixmap("resources/icon/Favorite.png"))
             self.setStyleSheet("background-color: rgba(255,193,7,80);"
                                "border: 0px solid gray;"
                                "font: 10pt 'Meiryo UI' ;"
                                "color: #212121;")
         elif mode == NotificationMode.RETWEET:  # if -> elif
-            self.icon_label.setPixmap(QPixmap("image/Retweet.png"))
+            self.icon_label.setPixmap(QPixmap("resources/icon/Retweet.png"))
             self.setStyleSheet("background-color: rgba(0,96,16,80);"
                                "border: 0px solid gray;"
                                "font: 10pt 'Meiryo UI' ;"
                                "color: #E0E0E0;")
         elif mode == NotificationMode.ERROR:
-            self.icon_label.setPixmap(QPixmap("image/Error.png"))
+            self.icon_label.setPixmap(QPixmap("resources/icon/Error.png"))
             self.setStyleSheet("background-color: rgba(154,0,7,80);"
                                "border: 0px solid gray;"
                                "font: 10pt 'Meiryo UI' ;"
                                "color: #E0E0E0;")
         else:
-            self.icon_label.setPixmap(QPixmap("image/Unknown.png"))
+            self.icon_label.setPixmap(QPixmap("resources/icon/Unknown.png"))
             self.setStyleSheet("background-color: #263238;"
                                "border: 0px solid gray;"
                                "font: 10pt 'Meiryo UI' ;"

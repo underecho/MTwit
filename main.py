@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication
 
 app = QApplication(sys.argv)
 app.setStyleSheet(
-    "QMainWindow{background-image: url('image/window.png');border: 0px solid black;}")
+    "QMainWindow{background-image: url('resources/backgrounds/window.png');border: 0px solid black;}")
 
 window = MainWindow()
 sys.exit(app.exec_())

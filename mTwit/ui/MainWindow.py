@@ -28,7 +28,7 @@ from .NotificationWindow import NotificationWindow, NotificationMode
 from .AuthWindow import AuthWindow
 
 class MainWindow(QMainWindow):
-    iconPath = "image/send.png"
+    iconPath = "resources/icon/send.png"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self.tbtn.resize(48, 48)
         self.tbtn.move(420, 62)
         self.tbtn.setObjectName('tButton')
-        self.tbtn.setIcon(QIcon("image/send.png"))
+        self.tbtn.setIcon(QIcon("resources/icon/send.png"))
         self.tbtn.setIconSize(QSize(32, 32))
         self.tbtn.setStyleSheet("background-color: rgba(200, 200, 200, 0);")
         self.tbtn.clicked.connect(self.tweetEvent)
