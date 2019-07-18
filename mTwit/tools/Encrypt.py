@@ -5,8 +5,6 @@ from Crypto.Cipher import AES
 
 
 class Cryptor:
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
 
     def doEncryption_data(self, raw_data, key, iv):
         # 前準備
