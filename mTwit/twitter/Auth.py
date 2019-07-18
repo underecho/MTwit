@@ -3,6 +3,7 @@ import tweepy
 import pathlib
 from mTwit.exceptions.twitter import *
 from tweepy.error import TweepError
+from debtcollector import removals
 
 
 class AppGateway:
@@ -32,6 +33,7 @@ class AppGateway:
         # signin_with_twitter=False for oauth/authorize (for desktop apps)
         return self._auth.get_authorization_url()
 
+    @removals.remove
     def open_auth_page(self) -> bool:
         """
         DEPRECATED. This feature will be moved to UI module.
