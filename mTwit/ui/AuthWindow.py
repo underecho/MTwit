@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QPoint, QSize
 from PyQt5.QtWidgets import (QLabel, QLineEdit, QDialog)
 
 from mTwit.exceptions.twitter import VerifyError
-from mTwit.ui.ui_base import HoverButton, QuitButton
+from .ControlBase import HoverButton, QuitButton
 from mTwit.twitter.Auth import AppGateway
 
 class AuthWindow(QDialog):  # CK, CS, PIN

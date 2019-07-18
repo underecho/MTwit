@@ -23,7 +23,8 @@ from PyQt5.QtWidgets import (
 
 from system_hotkey import SystemHotkey
 
-from mTwit.ui.ui_base import Win32Window, HoverButton, QuitButton
+from mTwit.ui.ui_base import Win32Window
+from .ControlBase import HoverButton, QuitButton
 from .NotificationWindow import NotificationWindow, NotificationMode
 from .AuthWindow import AuthWindow
 
