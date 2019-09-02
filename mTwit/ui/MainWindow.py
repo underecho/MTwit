@@ -85,13 +85,13 @@ class MainWindow(QMainWindow):
 
         # label
         """self.lbl = QLabel(self)
-    self.lbl.setText("")
-    self.lbl.setStyleSheet("background-color: rgb(0,0,0);"
+        self.lbl.setText("")
+        self.lbl.setStyleSheet("background-color: rgb(0,0,0);"
                  "border: 0px solid red;"
                  "color: rgb(255,255,255);"
                  "font: bold italic 20pt 'Times New Roman';")
-    self.lbl.setGeometry(5,5,60,40)
-    """
+        self.lbl.setGeometry(5,5,60,40)
+        """
 
         self.oldPos = self.pos()
 
@@ -197,12 +197,6 @@ class MainWindow(QMainWindow):
     def makeDebugwindow(self, *args):
         fav = NotificationWindow(self, message="Test Message.")
         fav.show(NotificationMode.ERROR)
-        """
-    try:
-      raise MTwitError
-    except:
-      pass
-    """
 
     def setParam(self, param):
         self.textWindow.setPlainText(param)

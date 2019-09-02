@@ -21,7 +21,7 @@ class NotificationWindow(QDialog):  # ErrorWindowと統合してもいいかも�
     def __init__(self, parent=None, time=1000, message=''):
         super(NotificationWindow, self).__init__(parent)
 
-        layout: QHBoxLayout= QHBoxLayout()
+        layout: QHBoxLayout = QHBoxLayout()
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.FramelessWindowHint)
         desktop = QtWidgets.QDesktopWidget()
 

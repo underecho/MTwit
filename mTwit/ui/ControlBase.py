@@ -16,7 +16,7 @@ class MTwitButton(QPushButton):
                 background-color: rgba(200, 200, 200, 0.2);
             }
             """
-        )
+        ) # たしかQtのstyleSheet内で擬似要素は使えなかった気がする
 
 
 class HoverButton(QPushButton):
