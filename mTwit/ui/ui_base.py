@@ -1,4 +1,5 @@
 import win32gui
+import pywintypes
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QWindow
 from PyQt5.QtWidgets import QDesktopWidget
@@ -24,7 +25,10 @@ class Win32Window:
         return self._handle
 
     def focus(self):
-        win32gui.SetForegroundWindow(self.handle)
+        try:  # This code is ignore exception
+            win32gui.SetForegroundWindow(self.handle)
+        except pywintypes.error:
+            pass
 
 
 def taskbar_info() -> (str, int, int):
